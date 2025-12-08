@@ -1,21 +1,67 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>{{TITLE}}</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+
+<meta name="description" content="{{DESCRIPTION}}">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:image" content="{{THUMBNAIL}}">
+<meta property="og:type" content="article">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css" id="gh-css-light"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-dark.min.css" id="gh-css-dark" disabled/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" id="hljs-style"/>
+
 <style>
-  body { display: flex; justify-content: center; padding: 20px; }
-  .markdown-body { max-width: 900px; width: 100%; }
+body { display:flex; justify-content:center; padding:20px; background:var(--bg); color:var(--fg); transition:background .2s,color .2s; }
+.markdown-body { max-width:900px; width:100%; }
+.theme-toggle { position:fixed; right:16px; bottom:16px; background:#fff; border-radius:999px; padding:8px; box-shadow:0 2px 8px rgba(0,0,0,.12); cursor:pointer; }
+[data-theme="dark"] .theme-toggle { background:#0b1220; color:#fff; }
+:root { --bg: #fff; --fg: #000; }
+[data-theme="dark"] { --bg:#0b1220; --fg:#c9d1d9; }
+.card-thumbnail { width:100%; max-height:180px; object-fit:cover; border-radius:6px; }
 </style>
 </head>
 <body>
   <article class="markdown-body">
     {{CONTENT}}
   </article>
+
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌓</button>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script>hljs.highlightAll();</script>
+
+  <script>
+  // Theme toggle using localStorage
+  (function(){
+    const root = document.documentElement;
+    const light = document.getElementById('gh-css-light');
+    const dark = document.getElementById('gh-css-dark');
+    const toggle = document.getElementById('themeToggle');
+    function applyTheme(t){
+      if(t==='dark'){
+        root.setAttribute('data-theme','dark');
+        dark.disabled = false;
+        light.disabled = true;
+      } else {
+        root.removeAttribute('data-theme');
+        dark.disabled = true;
+        light.disabled = false;
+      }
+    }
+    const stored = localStorage.getItem('theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light');
+    applyTheme(stored);
+    toggle.addEventListener('click', ()=>{
+      const cur = document.documentElement.getAttribute('data-theme')==='dark' ? 'dark' : 'light';
+      const next = cur==='dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', next);
+      applyTheme(next);
+    });
+  })();
+  </script>
 </body>
 </html>
